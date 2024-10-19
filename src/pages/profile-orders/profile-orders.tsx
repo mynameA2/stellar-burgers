@@ -1,10 +1,24 @@
 import { ProfileOrdersUI } from '@ui-pages';
-import { TOrder } from '@utils-types';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchUserOrders } from '../../slices/userOrderSlice';
+import { Preloader } from '../../components/ui/preloader';
 
 export const ProfileOrders: FC = () => {
-  /** TODO: взять переменную из стора */
-  const orders: TOrder[] = [];
+  const dispatch = useDispatch();
+  const { orders, isLoading, error } = useSelector((state) => state.userOrders);
 
-  return <ProfileOrdersUI orders={orders} />;
+  // При монтировании компонента ставим useEffect для получения данных о заказах
+  useEffect(() => {
+    dispatch(fetchUserOrders());
+  }, [dispatch]);
+
+  // Если данные о заказах не загружены, отображаем прелоадер
+  if (isLoading) return <Preloader />;
+
+  // Если есть ошибка, отображаем ее
+  if (error) return <div>Ошибка загрузки заказов: {error}</div>;
+
+  // Если данные о заказах загружены, отображаем их
+  return <ProfileOrdersUI orders={orders || []} />;
 };
