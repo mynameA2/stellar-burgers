@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface IConstructorItemsState {
   bun: TIngredient | null;
-  ingredients: (TIngredient & { uuid: string })[];
+  ingredients: (TIngredient & { id: string })[];
   orderRequest: boolean;
   orderModalData: TOrder | null;
   price: number;
@@ -24,23 +24,29 @@ const constructorItemsSlice = createSlice({
   initialState,
   reducers: {
     // редюсер для добавления ингредиента в конструктор
-    addIngredient: (state, action: PayloadAction<TIngredient>) => {
-      if (action.payload.type === 'bun') {
-        state.bun = action.payload; // булка заменяется
-      } else if (state.ingredients.length < 6) {
-        state.ingredients.push({ ...action.payload, uuid: uuidv4() }); // добавляем уникальный ID
+    addIngredient: {
+      reducer: (state, action: PayloadAction<TIngredient & { id: string }>) => {
+        if (action.payload.type === 'bun') {
+          state.bun = action.payload; // булка заменяется
+        } else if (state.ingredients.length < 6) {
+          state.ingredients.push(action.payload); // добавляем ингредиент с уникальным ID
+        }
+      },
+      prepare: (ingredient: TIngredient) => {
+        const id = uuidv4();
+        return { payload: { ...ingredient, id } }; // генерируем uuid и добавляем его в payload
       }
     },
     // редюсер для удаления ингредиента из конструктора
-    removeIngredient: (state, action: PayloadAction<number>) => {
+    removeIngredient: (state, action: PayloadAction<string>) => {
       state.ingredients = state.ingredients.filter(
-        (item) => Number(item.uuid) === action.payload
+        (item) => item.id !== action.payload
       );
     },
     // редюсер для перемещения ингредиента вниз
-    moveIngredientDown: (state, action: PayloadAction<number>) => {
+    moveIngredientDown: (state, action: PayloadAction<string>) => {
       const index = state.ingredients.findIndex(
-        (item) => Number(item.uuid) === action.payload
+        (item) => item.id === action.payload
       );
       if (index < state.ingredients.length - 1) {
         const temp = state.ingredients[index];
@@ -49,9 +55,9 @@ const constructorItemsSlice = createSlice({
       }
     },
     // редюсер для перемещения ингредиента вверх
-    moveIngredientUp: (state, action: PayloadAction<number>) => {
+    moveIngredientUp: (state, action: PayloadAction<string>) => {
       const index = state.ingredients.findIndex(
-        (item) => Number(item.uuid) === action.payload
+        (item) => item.id === action.payload
       );
       if (index > 0) {
         const temp = state.ingredients[index];

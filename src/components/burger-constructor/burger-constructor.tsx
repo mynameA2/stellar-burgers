@@ -18,7 +18,7 @@ export const BurgerConstructor: FC = () => {
     (state) => state.constructorItems
   );
   const { order, isLoadingSingleOrder } = useSelector((state) => state.order); // используем новое состояние для заказа
-  // const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const constructorItems = {
     bun: bun,
@@ -29,10 +29,10 @@ export const BurgerConstructor: FC = () => {
     // если нет булки или заказ уже отправляется, то ничего не делаем
     if (!constructorItems.bun || isLoadingSingleOrder) return;
 
-    // if (!isAuthenticated) {
-    //   navigate('/login');
-    //   return;
-    // }
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
 
     // создаем массив ингредиентов, состоящий из верхней, нижней булки и ингредиентов для отправки на сервер
     const orderIngredients = [
@@ -71,15 +71,15 @@ export const BurgerConstructor: FC = () => {
   };
 
   // Подсчет общей стоимости
-  // const price = useMemo(
-  //   () =>
-  //     (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
-  //     constructorItems.ingredients.reduce(
-  //       (s: number, v: TConstructorIngredient) => s + v.price,
-  //       0
-  //     ),
-  //   [constructorItems]
-  // );
+  const price = useMemo(
+    () =>
+      (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
+      constructorItems.ingredients.reduce(
+        (s: number, v: TConstructorIngredient) => s + v.price,
+        0
+      ),
+    [constructorItems]
+  );
 
   return (
     <BurgerConstructorUI
