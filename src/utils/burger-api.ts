@@ -111,18 +111,38 @@ type TNewOrderResponse = TServerResponse<{
   name: string;
 }>;
 
-// запрос на создание нового заказа
-export const orderBurgerApi = (data: string[]) =>
-  request<TNewOrderResponse>(`/orders`, {
+// запрос на создание нового заказа с актуальным токеном
+export const orderBurgerApi = async (data: string[]) => {
+  const token = getCookie('accessToken');
+
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  return fetchWithRefresh<TNewOrderResponse>(`/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken')
+      authorization: token
     } as HeadersInit,
     body: JSON.stringify({
       ingredients: data
     })
   }).then((data) => data);
+};
+
+// // запрос на создание нового заказа
+// export const orderBurgerApi = (data: string[]) =>
+//   request<TNewOrderResponse>(`/orders`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json;charset=utf-8',
+//       authorization: getCookie('accessToken')
+//     } as HeadersInit,
+//     body: JSON.stringify({
+//       ingredients: data
+//     })
+//   }).then((data) => data);
 
 type TOrderResponse = TServerResponse<{
   orders: TOrder[];

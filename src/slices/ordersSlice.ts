@@ -10,6 +10,7 @@ import {
 const initialState: TOrdersData & {
   order: TOrder | null;
   isLoadingSingleOrder: boolean;
+  errorText: string | null;
 } = {
   orders: [],
   total: 0,
@@ -20,7 +21,7 @@ const initialState: TOrdersData & {
   errorText: null
 };
 
-// Thunk для отправки заказа на сервер
+// Thunk для отправки заказа на сервер с актуальным токеном
 export const sendOrder = createAsyncThunk(
   'orders/sendOrder',
   async (orderIngredients: string[]) => {
@@ -69,7 +70,7 @@ const ordersSlice = createSlice({
       })
       .addCase(sendOrder.rejected, (state, action) => {
         state.isLoadingSingleOrder = false;
-        state.errorText = action.payload as string;
+        state.errorText = action.error.message || 'Ошибка при отправке заказа';
       });
 
     // fetchOrders
@@ -94,9 +95,9 @@ const ordersSlice = createSlice({
           state.totalToday = action.payload.totalToday;
         }
       )
-      .addCase(fetchOrders.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(fetchOrders.rejected, (state, action) => {
         state.isLoading = false;
-        state.errorText = action.payload;
+        state.errorText = action.error.message || 'Ошибка при загрузке заказов';
       });
 
     // fetchOrderById
@@ -124,15 +125,13 @@ const ordersSlice = createSlice({
           }
         }
       )
-      .addCase(fetchOrderById.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(fetchOrderById.rejected, (state, action) => {
         state.isLoadingSingleOrder = false;
-        state.errorText = action.payload;
+        state.errorText = action.error.message || 'Ошибка при загрузке заказа';
       });
-  },
-  selectors: { selectLoading: (state) => state.isLoading }
+  }
 });
 
-export const selectLoading = ordersSlice.selectors.selectLoading;
 // Экспорт действий и редюсера
 export const { clearOrder } = ordersSlice.actions;
 export default ordersSlice.reducer;

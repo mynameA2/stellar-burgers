@@ -83,7 +83,7 @@ export const BurgerConstructor: FC = () => {
 
   return (
     <BurgerConstructorUI
-      price={0} // подсчет общей стоимости нужно исправить
+      price={price} // подсчет общей стоимости нужно исправить
       orderRequest={isLoadingSingleOrder || orderRequest} // используем флаг загрузки из обоих состояний
       constructorItems={constructorItems}
       orderModalData={order}
