@@ -7,7 +7,7 @@ import {
 } from '../utils/burger-api';
 
 // Начальное состояние для заказа
-const initialState: TOrdersData & {
+export const initialState: TOrdersData & {
   order: TOrder | null;
   isLoadingSingleOrder: boolean;
   errorText: string | null;
@@ -66,7 +66,11 @@ const ordersSlice = createSlice({
       })
       .addCase(sendOrder.fulfilled, (state, action: PayloadAction<TOrder>) => {
         state.isLoadingSingleOrder = false;
+        // Обновляем состояние текущего заказа
         state.order = action.payload;
+
+        // Добавляем новый заказ в массив orders
+        state.orders.push(action.payload); // добавляем новый заказ в массив
       })
       .addCase(sendOrder.rejected, (state, action) => {
         state.isLoadingSingleOrder = false;
@@ -123,6 +127,9 @@ const ordersSlice = createSlice({
           } else {
             state.orders.push(action.payload);
           }
+
+          // Устанавливаем текущий заказ в поле `order`
+          state.order = action.payload;
         }
       )
       .addCase(fetchOrderById.rejected, (state, action) => {

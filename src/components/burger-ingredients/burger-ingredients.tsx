@@ -67,6 +67,9 @@ export const BurgerIngredients: FC<BurgerIngredientsProps> = ({
       mainsRef={mainsRef}
       saucesRef={saucesRef}
       onTabClick={onTabClick}
+      dataCyBuns='bun_ingredients' // передаем data-cy для булок
+      dataCyMains='main_ingredients' // передаем data-cy для начинок
+      dataCySauces='souce_ingredients' // передаем data-cy для соусов
     />
   );
 };

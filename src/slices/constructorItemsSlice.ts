@@ -2,9 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TConstructorItems, TIngredient, TOrder } from '../utils/types';
 import { v4 as uuidv4 } from 'uuid';
 
-interface IConstructorItemsState {
+export interface IConstructorItemsState {
   bun: TIngredient | null;
-  ingredients: (TIngredient & { id: string })[];
+  // ingredients: (TIngredient & { id: string })[];
+  ingredients: TConstructorItems['ingredients'];
   orderRequest: boolean;
   orderModalData: TOrder | null;
   price: number;
@@ -46,7 +47,7 @@ const constructorItemsSlice = createSlice({
     // редюсер для перемещения ингредиента вниз
     moveIngredientDown: (state, action: PayloadAction<string>) => {
       const index = state.ingredients.findIndex(
-        (item) => item.id === action.payload
+        (item) => item._id === action.payload // Используем _id для поиска
       );
       if (index < state.ingredients.length - 1) {
         const temp = state.ingredients[index];
@@ -57,7 +58,7 @@ const constructorItemsSlice = createSlice({
     // редюсер для перемещения ингредиента вверх
     moveIngredientUp: (state, action: PayloadAction<string>) => {
       const index = state.ingredients.findIndex(
-        (item) => item.id === action.payload
+        (item) => item._id === action.payload // Используем _id для поиска
       );
       if (index > 0) {
         const temp = state.ingredients[index];
