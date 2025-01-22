@@ -1,14 +1,21 @@
-import { useState, useRef, useEffect, FC } from 'react';
+import { useState, useRef, useEffect, FC, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import { TTabMode } from '@utils-types';
+import { TIngredient, TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
+import { useSelector } from '../../services/store';
+type BurgerIngredientsProps = {
+  ingredients: TIngredient[];
+};
 
-export const BurgerIngredients: FC = () => {
-  /** TODO: взять переменные из стора */
-  const buns = [];
-  const mains = [];
-  const sauces = [];
+export const BurgerIngredients: FC<BurgerIngredientsProps> = ({
+  ingredients
+}) => {
+  const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
+  const mains = ingredients.filter((ingredient) => ingredient.type === 'main');
+  const sauces = ingredients.filter(
+    (ingredient) => ingredient.type === 'sauce'
+  );
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);
@@ -47,8 +54,6 @@ export const BurgerIngredients: FC = () => {
       titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  return null;
-
   return (
     <BurgerIngredientsUI
       currentTab={currentTab}
@@ -62,6 +67,9 @@ export const BurgerIngredients: FC = () => {
       mainsRef={mainsRef}
       saucesRef={saucesRef}
       onTabClick={onTabClick}
+      dataCyBuns='bun_ingredients' // передаем data-cy для булок
+      dataCyMains='main_ingredients' // передаем data-cy для начинок
+      dataCySauces='souce_ingredients' // передаем data-cy для соусов
     />
   );
 };

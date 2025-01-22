@@ -1,8 +1,8 @@
-import { Dispatch, SetStateAction, SyntheticEvent } from 'react';
+import { Dispatch, SetStateAction, SyntheticEvent, ChangeEvent } from 'react';
 
 export type PageUIProps = {
   errorText: string | undefined;
   email: string;
-  setEmail: Dispatch<SetStateAction<string>>;
+  setEmail: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: SyntheticEvent) => void;
 };
